@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/128/2108/2108625.png">
+    <title>In Control</title>
+    <link rel="stylesheet" href="../login.css">
+</head>
+<body>
+    
+    <div id="login-container">
+        
+        <form action="/login" method="POST" id="login_form">
+            <label for="login_email">E-mail</label>
+            <input type="email" name="email" id="login_email" placeholder="Digite seu e-mail" autocomplet="off">
+
+            <label for="login_password">Senha</label>
+            <input type="password" name="password" id="login_password" placeholder="Digite sua senha">
+            <input onclick="checarCamposLog()" type="submit" value="login">
+            <div id="icon" onclick="showHide()"></div>
+        </form>
+        
+        <% if (typeof errorMessage !== 'undefined') { %>
+            <div class="error-message" id="errorMessage">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+        
+
+        <a href="#" onclick="modalCad.open()">Cadastre-se</a>
+    </div>
+
+    <div class="modal-overlay-cad">
+        <div class="modal">
+                <h1>Cadastro</h1>
+            <form action="/addUser" method="POST" id="cad_form">
+                <label for="cad_name">Nome Completo</label>
+                <input type="text" name="cadName" id="cad_name" placeholder="Digite seu nome" >
+
+                <label for="cad_email">E-mail</label>
+                <input type="text" name="cadEmail" id="cad_email" placeholder="Digite seu e-mail" autocomplet="off">
+
+                <label for="cad_password">Senha</label>
+                <input type="password" name="cadPassword" id="cad_password" placeholder="Digite sua senha">
+
+                <input onclick="checarCamposCad()" type="submit" value="Salvar">
+            </form>
+        <a href="#" onclick="modalCad.close()" class="buttonCancel">Cancelar</a>
+        </div>
+    </div>
+    
+    <script>
+        const modalCad = {
+	        open() {
+		        document.querySelector('.modal-overlay-cad').classList.add('active');
+		        },
+	        close() {
+		        document.querySelector('.modal-overlay-cad').classList.remove('active');
+                }
+            }
+            function checarCamposCad() {
+                
+                let cadName = document.querySelector('#cad_name');
+                let cadEmail = document.querySelector('#cad_email');
+                let cadPassword = document.querySelector('#cad_password');
+
+
+                if (!cadName.value.trim() || !cadEmail.value.trim() || !cadPassword.value.trim()) {
+                    alert('Por favor, preencha todos os campos.');
+                    return false;
+                }
+                    return true;
+            }
+            
+            function checarCamposLog() {
+                
+                let loginName = document.querySelector('#login_email');
+                let loginEmail = document.querySelector('#login_password');
+                
+
+
+                if (!loginName.value.trim() || !loginEmail.value.trim()) {
+                    alert('Por favor, preencha todos os campos.');
+                    return false;
+                }
+                    return true;
+            }
+    
+            function showHide() {
+                const password = document.getElementById('login_password')
+                const icon = document.getElementById('icon')
+
+                if (password.type === 'password') {
+                    password.setAttribute('type', 'text')
+                    icon.classList.add('hide')
+                }else{
+                    password.setAttribute('type', 'password')
+                    icon.classList.remove('hide')
+                }
+            }
+    </script>
+</body>
+</html>

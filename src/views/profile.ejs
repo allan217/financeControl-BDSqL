@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#41414C" />
+    <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/128/2108/2108625.png">
+    <title>Perfil</title>
+
+    <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/partials/page-header.css" />
+    <link rel="stylesheet" href="/styles/partials/cards.css" />
+    <link rel="stylesheet" href="/styles/partials/buttons.css" />
+    <link rel="stylesheet" href="/styles/partials/forms.css" />
+    <link rel="stylesheet" href="/styles/partials/animations.css" />
+    <link rel="stylesheet" href="/styles/pages/profile.css" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+    <a href="/page-finance" id="back"> <-- </a>
+
+  <body id="page-profile">
+    <div class="container animate-up delay-2">
+      <aside class="card">
+        <img src="<%= profile.avatar %>" alt="">
+        <h2><%= profile.name %></h2>
+    
+        <button onclick="ModalAlter.open()" class="button green" form="form-profile" type="submit">Salvar dados</button>
+        <button onclick="ModalAlterPass.open()" class="button green" form="form-alterPass">Alterar senha</button>
+      </aside>
+      <main>
+
+        <form id="form-profile" method="post" action="/profile">
+          <fieldset>
+            <legend>Dados do perfil</legend>
+            <div class="separator light"></div>
+
+            <div class="input-group">
+              <div class="input-wrapper">
+                <label for="name">Nome</label>
+                <input type="text" id="name" name="name" value="<%= profile.name %>" />
+              </div>
+
+              <div class="input-wrapper">
+                <label for="avatar">Link da foto</label>
+                <input 
+                placeholder="https://"
+                type="url" 
+                id="avatar" 
+                name="avatar" value="<%= profile.avatar %>" />
+              </div>
+                <div class="input-wrapper">
+                  <label for="monthly-budget">CPF</label>
+                  <input 
+                    type="text"
+                    step="0.1" 
+                    id="monthly-budget" 
+                    name="cpf" 
+                    placeholder="" value="<%= profile.cpf %>"/>
+                </div>
+            </div>
+          </fieldset>    
+        </form>
+
+        <form id="form-alterPass" method="post" action="/profile/updatePass/<%= profile.id %>">
+          <fieldset>
+            <legend>Dados de senha</legend>
+            <div class="separator light"> </div>
+            <div class="modalalterpass" id="modalPass">
+              <div class="input-group">
+                <div class="input-wrapper">
+                  <label for="atualPassword">Senha atual:</label>
+                  <input 
+                    type="password"
+                    id="atualPassword"
+                    name="atualPassword"/>
+                </div>
+                  <div class="input-wrapper">
+                    <label for="newPassword">Nova senha:</label>
+                    <input
+                      type="password"
+                      id="newPassword" 
+                      name="newPassword"/>
+                  </div>
+                  <div class="input-wrapper">
+                    <label for="reptPassword">Repita a senha:</label>
+                    <input 
+                      type="password" 
+                      id="reptPassword" 
+                      name="reptPassword"/>
+                  </div>
+              </div>
+              <div class="input-group">
+                <% if (typeof errorMessageTwo !== 'undefined') { %>
+                  <div class="error-message" id="errorMessageAP">
+                      <%= errorMessageTwo %>
+                  </div>
+                <% } %>
+                
+                <% if (typeof errorMessageOne !== 'undefined') { %>
+                  <div class="error-message" id="errorMessageNP">
+                      <%= errorMessageOne %>
+                  </div>
+                <% } %>
+              </div>
+            </div>  
+          </fieldset> 
+        </form>
+
+      </main>
+    </div>
+    <!-- end container -->
+
+    <div class="modal-alter" id="modal">
+        <div class="modal">
+            <h1>Confirmar atualização de dados?</h1>
+            <button type="button" onclick="enviarFormulario()" class="buttonConfirm">Sim</button>
+            <button type="button" onclick="ModalAlter.close()" class="buttonSairModal">Não</button>
+        </div>
+    </div>
+
+    <div class="modal-alter-pass" id="modalConfirPass">
+      <div class="modal">
+          <h1>Confirmar alteração de senha?</h1>
+          <button type="button" onclick="enviarFormularioAlterPass()" class="buttonConfirm">Sim</button>
+          <button type="button" onclick="ModalAlterPass.close()" class="buttonSairModal">Não</button>
+      </div>
+  </div>
+
+    <script>
+        const ModalAlter = {
+            open() {
+                document.querySelector(`#modal`).classList.add('active');
+                
+          },
+            close() {
+                document.querySelector(`#modal`).classList.remove('active');
+          }
+        }
+ 
+        const ModalAlterPass = {
+        open() {
+            document.querySelector(`#modalConfirPass`).classList.add('active');
+        },
+        close() {
+        document.querySelector(`#modalConfirPass`).classList.remove('active');
+        }
+      }
+
+        function enviarFormulario() {
+            document.getElementById('form-profile').submit();
+        }
+        document.getElementById('form-profile').addEventListener('submit', function(event) {
+            event.preventDefault();
+            ModalAlter.open();
+        })
+
+        function enviarFormularioAlterPass() {
+            document.getElementById('form-alterPass').submit();
+        }
+            document.getElementById('form-alterPass').addEventListener('submit', function(event) {
+            event.preventDefault();
+            ModalAlterPass.open();
+        })
+
+    </script>
+
+  </body>
+</html>

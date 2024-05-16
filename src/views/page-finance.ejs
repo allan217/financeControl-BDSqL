@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/128/2108/2108625.png">
+        <title>In Control</title>
+
+        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="/animation.css">
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,400;0,700;1,100;1,400;1,700&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <h1 id="newLogo">In Control</h1>
+            <a href="/profile" id="avatar-profile">
+                <p><%= teste.name %> <span>Ver perfil</span></p>
+                <img src="<%= teste.avatar %>" />
+              </a>
+              <a href="/" id="sair">Sair</a>
+        </header>
+
+        <main class="container">
+            <section class="animate-pop" id="balance">
+                <h2 class="sr-only">Balanço</h2>
+
+                    <div class="card">
+                        <h3>
+                            <span>
+                                Entradas
+                            </span>
+                            <img src="/assets/income.svg" alt="Image de entradas">
+                        </h3>
+                        <p id="incomeDisplay"><%= transactions.cardIncome %></p>
+                    </div>
+    
+                    <div class="card">
+                        <h3>
+                            <span>
+                                Saídas
+                            </span>
+                            <img src="/assets/expense.svg" alt="Image de saídas">
+                        </h3>
+                        <p id="expenseDisplay"><%= transactions.cardExpense %></p>
+                    </div>
+    
+                    <div class="card total">
+                        <h3>
+                            <span>
+                                Saldo
+                            </span>
+                            <img src="/assets/total.svg" alt="Image de total">
+                        </h3>
+                        <p id="totalDisplay"><%= transactions.cardTotal %></p>
+                    </div>                
+                
+            </section>
+
+            <section class="animate-pop delay-1" id="transaction">
+                <h2 class="sr-only">Transações</h2>
+
+                <a href="/add/" 
+                class="button new">+ Nova Transação</a>
+             
+                <table class="animate-pop delay-2" id="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <% transactions.trans.forEach(item => { %>
+
+                        <tbody>
+                            <tr>
+                                <td><%= item.id %></td>
+                                <td><%= item.description %></td>
+                                
+
+                                <% if (item && item.amount !== undefined) { %>
+                                    <td><%= item.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); %></td>
+                                <% } else { %>
+                                    <td>N/A</td>
+                                <% } %>
+                                
+
+                                <% 
+                                    // Criar um novo objeto Date ajustado para o fuso horário local
+                                    const adjustedDate = new Date(item.date);
+                                    adjustedDate.setMinutes(adjustedDate.getMinutes() + adjustedDate.getTimezoneOffset());
+                                %>
+                                <td><%= adjustedDate.toLocaleDateString('pt-BR') %></td>
+                                <td>
+                                <a href="#" onclick="ModalRem.open('<%= item.id %>')"><img src="/assets/excluir.png" alt="Remover transação"></a>
+                                
+                                <a href="/editT/<%= item.id %>"><img src="../assets/edit.png" alt="Edição"></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    
+                    <% }); %>
+
+                    
+                </table>
+            </section>
+        </main>
+
+        <% transactions.trans.forEach(item => { %>
+            <div class="modal-remove" id="modal<%= item.id %>">
+                <div class="modal">
+                    <h1>Tem certeza que deseja excluir?</h1>
+                    <button type="button" onclick="submitForm('<%= item.id %>')" class="buttonConfirm">Sim</button>
+                    <button type="button" onclick="ModalRem.close('<%= item.id %>')" class="buttonSairModal">Não</button>
+                </div>
+                <form method="post" action="/delete/<%= item.id %>" id="delete-trans-<%= item.id %>">
+                    <input type="hidden" name="delete" value="<%= item.id %>">
+                </form>
+            </div>
+        <% }); %>
+
+        <script>
+            const ModalRem = {
+                open(id) {
+                    document.querySelector(`#modal${id}`).classList.add('active');
+                    
+              },
+                close(id) {
+                    document.querySelector(`#modal${id}`).classList.remove('active');
+              }
+            }
+            function submitForm(id) {
+                    document.getElementById(`delete-trans-${id}`).submit();
+            }
+    
+        </script>
+
+
+        <footer><p>inControl$</p></footer>
+
+        
+    </body>
+</html>

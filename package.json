@@ -1,0 +1,24 @@
+{
+  "name": "financecontrol-bdsql",
+  "version": "1.0.0",
+  "description": "![tela-login](https://user-images.githubusercontent.com/73024275/107808637-ad730000-6d48-11eb-83ec-37f319f0db11.png)",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon .",
+    "init-db": "node src/db/init.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cookie-session": "^2.1.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.1",
+    "mysql2": "^3.9.7",
+    "nodemon": "^3.1.0",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}
