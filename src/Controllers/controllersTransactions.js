@@ -1,42 +1,35 @@
-const Transaction = require('../Dados/dadosTransactions');
-const Profile = require('../Dados/Profile')
+const connection = require('../db/config')
+
 
 module.exports = {
-    // Método para salvar uma nova transação
-    async save(req, res) {
-        //const transImport = await Transaction.get();
-        //const transId = transImport.trans.length > 0 ? transImport.trans[transImport.trans.length - 1].id : 0;
-        await Transaction.save({
-            //id: transId + 1,
-            description: req.body.description,
-            amount: Number(req.body.amount),
-            date: req.body.date
-        })
 
-        //console.log("Nova transação salva:", transImport.trans);
-        return res.redirect('page-finance');
-    },
-
-    // Método para renderizar a página de adicionar transação
-    create(req, res) {
-        return res.render("addtrans");
-    },
-
-    // Método para renderizar a página de finanças e calcular os totais
+    // Método para renderizar a página de finanças e calcular os totais.
     async index(req, res) {
-        
-                        
-            const transImport = await Transaction.get(); // Aguarde a resolução da promessa
-            
+        const query = 'SELECT * FROM trans';
+
+        connection.query(query, (error, results) => {
+            if (error) {
+                console.error('Erro ao executar a consulta:', error.stack);
+                res.status(500).send('Erro ao recuperar os dados de transações.');
+                return;
+            }
+
+            const transactions = {
+                trans: results,
+                cardIncome: [],
+                cardExpense: [],
+                cardTotal: []              
+            };
+
             function removeFirstItem() {
-                if (transImport.cardIncome && transImport.cardIncome.length > 1) {
-                    transImport.cardIncome.shift();
+                if (transactions.cardIncome && transactions.cardIncome.length > 1) {
+                    transactions.cardIncome.shift();
                 }
-                if (transImport.cardExpense && transImport.cardExpense.length > 1) {
-                    transImport.cardExpense.shift();
+                if (transactions.cardExpense && transactions.cardExpense.length > 1) {
+                    transactions.cardExpense.shift();
                 }
-                if (transImport.cardTotal && transImport.cardTotal.length > 1) {
-                    transImport.cardTotal.shift();
+                if (transactions.cardTotal && transactions.cardTotal.length > 1) {
+                    transactions.cardTotal.shift();
                 }
             }
 
@@ -63,70 +56,116 @@ module.exports = {
                 array4.push(total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
             }
 
-            sumAttributeAndAddResult(transImport.trans, 'amount', transImport.cardIncome, transImport.cardExpense, transImport.cardTotal);
+            sumAttributeAndAddResult(transactions.trans, 'amount', transactions.cardIncome, transactions.cardExpense, transactions.cardTotal);
             removeFirstItem();
+            
+            // Consulta para obter os dados do perfil
+            const queryProfile = 'SELECT * FROM profile WHERE id = 1';
 
+            connection.query(queryProfile, (error, resultsProfile) => {
+                if (error) {
+                    console.error('Erro ao executar a consulta:', error.stack);
+                    res.status(500).send('Erro ao recuperar os dados do perfil.');
+                    return;
+                }
 
-            return res.render("page-finance", { transactions: transImport, teste: await Profile.get() });
+                if (resultsProfile.length === 0) {
+                    console.log('Perfil não encontrado.');
+                    res.status(404).send('Perfil não encontrado.');
+                    return;
+                }
+
+                const profile = resultsProfile[0];
+                // Renderiza a página com transações e perfil
+                res.render('page-finance', { transactions, profile });
+            });
+ 
+        });
+        
+            
         
     },
+    // Método para salvar uma nova transação
+    async save(req, res) {
+        const {description, amount, date} = req.body;
+        
+        const query = 'INSERT INTO trans (description, amount, date) VALUES (?, ?, ?)';
 
+        connection.query(query, [description, amount, date], (error, results) => {
+            if (error) {
+                console.error('Erro ao inserir transação: ', error.stack);
+                res.status(500).send('Erro ao adicionar transação.');
+                return;
+            }
+        } )
+
+        return res.redirect('page-finance');
+    },
+    // Método para renderizar a página que adiciona transação.
+    create(req, res) {
+        return res.render("addtrans");
+    },
     // Método para renderizar a página de edição de transação
     async edit(req, res) {
-        const transImport = await Transaction.get();
-        const transId = req.params.id;
-        const transaction = transImport.trans.find(trans => trans.id === Number(transId));
-
-        if (!transaction) {
-            return res.status(404).send('Transação não encontrada!');
-        }
-
-        return res.render("edittrans", { transaction });
-    },
-
-    // Método para atualizar/editar uma transação
-    async update(req, res) {
-        //const transImport = await Transaction.get();
-        const transId = req.params.id;
-        //const transaction = transImport.trans.findIndex(trans => Number(trans.id) === Number(transId));
-
-        const updatedTrans = {
-            description: req.body.description,
-            amount: Number(req.body.amount),
-            date: req.body.date
-        }
-
-        await Transaction.update(updatedTrans, transId)        
-
-        /*if (transaction === -1) {
-            return res.status(404).send('Transação não encontrada!');
-        }
-
-        // Atualiza os atributos da transação com os novos valores
-        transImport.trans[transaction].description = req.body.description;
-        transImport.trans[transaction].amount = Number(req.body.amount);
-        transImport.trans[transaction].date = req.body.date;
-
-        console.log("Transação atualizada:", transImport.trans[transaction]); */
+        const { id } = req.params;
         
-        res.redirect('/page-finance'); // Redireciona para a página de transações.
+        const query = 'SELECT * FROM trans WHERE id = ?';
+        connection.query(query, [id], (error, results) => {
+            if (error) {
+                console.error('Erro ao buscar a transação:', error.stack);
+                res.status(500).send('Erro ao buscar a transação.');
+                return;
+            }
+            
+            res.render('edittrans', { transaction: results[0] });
+        });
+        
+    },
+    // Método para atualizar uma transação
+    async update(req, res) {
+        const { id } = req.params;
+        const { description, amount, date } = req.body;
+    
+        connection.query('SELECT * FROM trans WHERE id = ?', [id], (error, results) => {
+            if (error) {
+                console.error('Erro ao verificar o ID:', error.stack);
+                res.status(500).send('Erro ao verificar o ID.');
+                return;
+            }
+    
+            if (results.length === 0) {
+                res.status(404).send('Transação não encontrada.');
+                return;
+            }
+    
+            const query = 'UPDATE trans SET description = ?, amount = ?, date = ? WHERE id = ?';
+            connection.query(query, [description, amount, date, id], (error, updateResults) => {
+                if (error) {
+                    console.error('Erro ao atualizar a transação:', error.stack);
+                    res.status(500).send('Erro ao atualizar a transação.');
+                    return;
+                }
+    
+                
+    
+                res.redirect('/page-finance');
+            });
+        });
     },
     // Método para remover uma transação
     async delete(req, res) {
-        //const transImport = await Transaction.get();
-        const transId = req.params.id;
+        
+        const { id } = req.params;
 
-        //const index = transImport.trans.findIndex(trans => trans.id === Number(transId));
-        await Transaction.delete(transId)
-        /*console.log("O ID é: ", index)
-        if (index !== -1) {
-            transImport.trans.splice(index, 1);
-            console.log("Transação removida:", transId);
-        } else {
-            console.log("Transação não encontrada:", transId);
-        }*/
+        const query = 'DELETE FROM trans WHERE id = ?';
+        connection.query(query, [id], (error, results) => {
+            if (error) {
+                console.error('Erro ao deletar a transação:', error.stack);
+                res.status(500).send('Erro ao deletar a transação.');
+                return;
+            }
 
-
-        res.redirect('/page-finance'); // Redireciona para a página de transações.
+            res.redirect('/page-finance');
+        });
     }
 }

@@ -1,4 +1,5 @@
 const dadosLogin = require('../Dados/dadosLogin')
+const connection = require('../db/config')
 
 
 
@@ -23,14 +24,21 @@ module.exports =  {
 
         const { email, password } = req.body;
         
-        const user = await dadosLogin.get();
-                
-        if (email === user.email && password === user.password) {         
-            return res.redirect("page-finance");
-        } else {
-            res.render("login", { errorMessage: "Credenciais inválidas. Por favor, tente novamente." });
-            return false;
-        }
+        const query = 'SELECT * FROM dadosLogin';
+
+        connection.query(query, (error, results, fields) => {
+            if (error) {
+                console.error('Erro ao executar a consulta:', error.stack);
+                res.status(500).send('Erro ao recuperar os dados do perfil.');
+                return;
+            }
+            if (email === results[0].email && password === results[0].password) {         
+                return res.redirect("page-finance");
+            } else {
+                res.render("login", { errorMessage: "Credenciais inválidas. Por favor, tente novamente." });
+                return false;
+            }
+        })
         
-    }
+    } 
    }

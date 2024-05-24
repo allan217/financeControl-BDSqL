@@ -108,6 +108,11 @@
                       <%= errorMessageOne %>
                   </div>
                 <% } %>
+                <% if (typeof successMessage !== 'undefined') { %>
+                  <div class="success-message" id="errorMessageNP">
+                      <%= successMessage %>
+                  </div>
+                <% } %>
               </div>
             </div>  
           </fieldset> 

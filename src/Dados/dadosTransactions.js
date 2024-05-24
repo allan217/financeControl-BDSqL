@@ -1,21 +1,23 @@
-const Database = require("../db/config")
+const connection = require("../db/config")
 
 
 
 module.exports = {
     async get() {
         try {
-            const db = await Database();
-            const data = await db.all(`select * from trans`);
-            await db.close();
+            const query = 'SELECT * FROM trans';
+            
+            // Executar a consulta ao banco de dados
+            const queryResult = await connection.query(query);
     
-            if (!data || data.length === 0) {
-                console.error("Nenhum dado de transações foi encontrado.");
+            // Verificar se os resultados existem e são um array
+            if (!queryResult || !Array.isArray(queryResult.results)) {
+                console.error("Os resultados da consulta não são um array:", queryResult);
                 return { trans: [], cardIncome: [], cardExpense: [], cardTotal: [] }; // Retorna uma estrutura de dados vazia
             }
     
-            // Mapeia os dados retornados para o formato desejado
-            const formattedData = data.map(item => ({
+            // Mapear os resultados para o formato desejado
+            const formattedData = queryResult.results.map(item => ({
                 id: item.id,
                 description: item.description,
                 amount: item.amount,

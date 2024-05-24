@@ -1,12 +1,12 @@
-const Database = require('../db/config')
+const connection = require('../db/config')
 
 
 
 module.exports = {
     async get() {
-        const db = await Database()
-        const data = await db.get(`SELECT * FROM dadosLogin`);
-        await db.close()
+        //const db = await Database()
+        const data = await connection.query(`SELECT * FROM dadosLogin`);
+        //await Database.end()
         
         return {
             id: data.id,
@@ -17,9 +17,9 @@ module.exports = {
         
     },
     async create(newUser) {
-        const db = await Database()
+        //const db = await Database()
 
-        await db.run(`INSERT INTO dadosLogin (
+        await Database.query(`INSERT INTO dadosLogin (
             name,
             email,
             password
@@ -29,28 +29,28 @@ module.exports = {
             "${newUser.password}"
         )`)
         
-        await db.close()
+        await Database.end()
         
     },
     async update(newData) {
-        const db = await Database()
+        //const db = await Database()
         
-        await db.run(`UPDATE dadosLogin SET
+        await Database.query(`UPDATE dadosLogin SET
         name = "${newData.name}",
         email = "${newData.email}",
         password = "${newData.password}"
         `)
         
-        await db.close()
+        await Database.end()
     },
     async updatePass(newPassword, passId) {
-        const db = await Database()
+        //const db = await Database()
 
-        await db.run(`UPDATE dadosLogin SET
+        await connection.query(`UPDATE dadosLogin SET
         password = "${newPassword}"
         WHERE id = ${passId}
         `)
         
-        await db.close()
+        await connection.end()
     }
 }

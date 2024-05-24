@@ -3,40 +3,51 @@ const connection = require('./config');
 const initDB = {
     
     async init() {
-        let db;
+        
         try {
-            db = await connection.connect();
-
-            await db.query(`CREATE TABLE IF NOT EXISTS profile (
+            await connection.query(`CREATE TABLE IF NOT EXISTS profile (
                 id INTEGER PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(255),
                 avatar VARCHAR(255),
                 cpf VARCHAR(14)
             )`);
 
-            await db.query(`CREATE TABLE dadosLogin (
+            await connection.query(`CREATE TABLE IF NOT EXISTS dadosLogin (
                 id INTEGER PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(255),
                 email VARCHAR(255),
                 password VARCHAR(255)
             )`);
 
-            await db.query(`CREATE TABLE trans (
+            await connection.query(`CREATE TABLE IF NOT EXISTS trans (
                 id INTEGER PRIMARY KEY AUTO_INCREMENT,
                 description TEXT,
                 amount FLOAT,
                 date DATETIME
             )`);
+
+            const today = new Date();
+            const formattedDate = today.toISOString().slice(0, 19).replace('T', ' ');
+
+            await connection.query(`INSERT INTO dadosLogin (
+                name,
+                email,
+                password
+            ) VALUES (
+                "Allan Saldanha",
+                "sanguec777@gmail.com",
+                "@llan217712"
+            )`);
     
     
             
-            console.log("Tabelas criadas com sucesso!!")
-
+            console.log("Tabelas criadas e dados inseridos com sucesso!!")
+                
         } catch (error) {
-            console.log("Erro ao criar tabela no banco.", error.message)
+            console.log("Erro ao inserir dados nas tabelas.", error.message)
     
         } finally {
-            if (db) await db.end();
+            if (connection) await connection.end();
         }
     }
 }

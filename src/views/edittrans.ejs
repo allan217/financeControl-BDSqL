@@ -36,10 +36,10 @@
                     </div>
                     <div class="input-group">
                         <label class="sr-only" for="date">Data</label>
-                        <input type="date" id="date" name="date" value="<%= transaction.date %>" />
+                        <input type="date" id="date" name="date" value="<%= new Date(transaction.date).toISOString().split('T')[0] %>" />
                     </div>
                     <div class="input-group actions">
-                        <a href="/" class="button cancel">Cancelar</a>
+                        <a href="/page-finance" class="button cancel">Cancelar</a>
                         <button type="submit">Salvar</button>
                     </div>
                 </form>                

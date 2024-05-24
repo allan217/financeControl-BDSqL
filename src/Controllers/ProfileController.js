@@ -1,55 +1,129 @@
-const Profile = require('../Dados/Profile')
-const dadosLogin = require('../Dados/dadosLogin')
+const connection = require('../db/config');
 
  
 module.exports =  {
     async index(req, res) {
-        
-            const profile = await Profile.get();
-            
-            return res.render("profile", { profile });
-        
-        
+        const query = 'SELECT * FROM profile';
+
+        connection.query(query, (error, results, fields) => {
+            if (error) {
+                console.error('Erro ao executar a consulta:', error.stack);
+                res.status(500).send('Erro ao recuperar os dados do perfil.');
+                return;
+            }
+            const profile = results[0];
+            res.render('profile', { profile });
+        });
     },
     async update(req, res) {
-        // Obter os novos dados do corpo da requisição
-        const newData = req.body;
         
-        // Obter os dados do perfil atual
-        const profile = await Profile.get();
+        const { name, avatar, cpf } = req.body;
 
+        const query = 'UPDATE profile SET name = ?, avatar = ?, cpf = ? WHERE id = 1';
 
-        // Mesclar os novos dados com os dados do perfil atual
-        const updatedProfile = { ...profile, ...newData };
+        connection.query(query, [name, avatar, cpf], (error, results) => {
+            if (error) {
+                console.error('Erro ao atualizar os dados do perfil:', error.stack);
+                res.status(500).send('Erro ao atualizar os dados do perfil.');
+                return;
+            }
 
-        // Chamar o método update do perfil com os dados combinados
-        await Profile.update(updatedProfile);
-
-        return res.redirect('/profile');
+            res.redirect('/profile');
+        });
     },
     async updatePass(req, res) {
-        const passId = req.params.id;
-        console.log(passId)
         const { atualPassword, newPassword, reptPassword } = req.body;
-        if (newPassword !== reptPassword) {
-            console.log("As novas senhas não correspondem.");
-            const profile = await Profile.get();
-            res.render("profile", { errorMessageOne: "As novas senhas não correspondem.", profile });
-            return;
-        }
-    
-        const dadosLoginAtual = await dadosLogin.get();
+        const { id } = req.params; // Supondo que o ID do perfil é passado como um parâmetro na URL
+
+    if (newPassword !== reptPassword) {
+        const errorMessageOne = "As novas senhas não coincidem.";
+        console.log(errorMessageOne);
+
         
-        if (atualPassword !== dadosLoginAtual.password) {
-            console.log("Senha atual incorreta!");
-            const profile = await Profile.get();
-            res.render("profile", { errorMessageTwo: "Senha atual incorreta. Por favor, tente novamente.", profile });
+        const queryGetProfile = 'SELECT * FROM profile WHERE id = ?';
+        connection.query(queryGetProfile, [id], (error, results, fields) => {
+            if (error) {
+                console.error('Erro ao buscar o perfil:', error.stack);
+                return res.status(500).send('Erro ao buscar o perfil.');
+            }
+
+            if (results.length === 0) {
+                console.log('Perfil não encontrado.');
+                return res.status(404).send('Perfil não encontrado.');
+            }
+
+            const profile = results[0];
+            return res.render("profile", { profile, errorMessageOne });
+        });
+        return;
+    }
+
+    
+    const queryGetPassword = 'SELECT password FROM dadosLogin WHERE id = ?';
+    connection.query(queryGetPassword, [id], (error, results, fields) => {
+        if (error) {
+            console.error('Erro ao buscar a senha atual:', error.stack);
+            return res.status(500).send('Erro ao buscar a senha atual.');
+        }
+
+        if (results.length === 0) {
+            console.log('Perfil não encontrado.');
+            return res.status(404).send('Perfil não encontrado.');
+        }
+
+        const currentPassword = results[0].password;
+
+        if (currentPassword !== atualPassword) {
+            const errorMessageTwo = 'Senha atual incorreta.';
+            console.log(errorMessageTwo);
+
+            
+            const queryGetProfile = 'SELECT * FROM profile WHERE id = ?';
+            connection.query(queryGetProfile, [id], (error, results, fields) => {
+                if (error) {
+                    console.error('Erro ao buscar o perfil:', error.stack);
+                    return res.status(500).send('Erro ao buscar o perfil.');
+                }
+
+                if (results.length === 0) {
+                    console.log('Perfil não encontrado.');
+                    return res.status(404).send('Perfil não encontrado.');
+                }
+
+                const profile = results[0];
+                return res.render("profile", { profile, errorMessageTwo });
+            });
             return;
         }
-        console.log("Senha alterada com sucesso!!")
-        await dadosLogin.updatePass(newPassword, passId);
+
+        
+        const queryUpdatePassword = 'UPDATE dadosLogin SET password = ? WHERE id = ?';
+        connection.query(queryUpdatePassword, [newPassword, id], (error, results, fields) => {
+            if (error) {
+                console.error('Erro ao atualizar a senha:', error.stack);
+                return res.status(500).send('Erro ao atualizar a senha.');
+            }
+
+            
+            const queryGetProfile = 'SELECT * FROM profile WHERE id = ?';
+            connection.query(queryGetProfile, [id], (error, results, fields) => {
+                if (error) {
+                    console.error('Erro ao buscar o perfil:', error.stack);
+                    return res.status(500).send('Erro ao buscar o perfil.');
+                }
+
+                if (results.length === 0) {
+                    console.log('Perfil não encontrado.');
+                    return res.status(404).send('Perfil não encontrado.');
+                }
+
+                const profile = results[0];
+                const successMessage = 'Senha alterada com sucesso!';
+                return res.render("profile", { profile, successMessage });
+            });
+        });
+    });
     
-        res.redirect('/profile');
-    }
+  }
     
-   }
+}

@@ -14,10 +14,10 @@
     <body>
         <header>
             <h1 id="newLogo">In Control</h1>
-            <a href="/profile" id="avatar-profile">
-                <p><%= teste.name %> <span>Ver perfil</span></p>
-                <img src="<%= teste.avatar %>" />
-              </a>
+                <a href="/profile" id="avatar-profile">
+                    <p> <%= profile.name %> <span>Ver perfil</span></p>
+                    <img src="<%= profile.avatar %>" />
+                </a>
               <a href="/" id="sair">Sair</a>
         </header>
 
@@ -32,7 +32,7 @@
                             </span>
                             <img src="/assets/income.svg" alt="Image de entradas">
                         </h3>
-                        <p id="incomeDisplay"><%= transactions.cardIncome %></p>
+                        <p id="incomeDisplay"><%= transactions ? transactions.cardIncome : '' %></p>
                     </div>
     
                     <div class="card">
@@ -42,7 +42,7 @@
                             </span>
                             <img src="/assets/expense.svg" alt="Image de saídas">
                         </h3>
-                        <p id="expenseDisplay"><%= transactions.cardExpense %></p>
+                        <p id="expenseDisplay"><%= transactions ? transactions.cardExpense : '' %></p>
                     </div>
     
                     <div class="card total">
@@ -52,7 +52,7 @@
                             </span>
                             <img src="/assets/total.svg" alt="Image de total">
                         </h3>
-                        <p id="totalDisplay"><%= transactions.cardTotal %></p>
+                        <p id="totalDisplay"><%= transactions ? transactions.cardTotal : '' %></p>
                     </div>                
                 
             </section>

@@ -6,10 +6,10 @@ const controllerLogin = require('./Controllers/controllerLogin');
 
 
 
-routes.get('/page-finance', controllersTransactions.index);
 routes.get('/', controllerLogin.index);
 routes.post('/login', controllerLogin.loginUser);
 routes.post('/addUser', controllerLogin.create);
+routes.get('/page-finance', controllersTransactions.index);
 routes.get('/profile', ProfileController.index);
 routes.post('/profile', ProfileController.update);
 routes.get('/profile/updatePass/:id', ProfileController.updatePass);
