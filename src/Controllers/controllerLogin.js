@@ -29,7 +29,7 @@ module.exports =  {
                 return res.status(500).send('Erro ao criar novo usuário.');
             }
 
-            // Inserir novo usuário
+            // Inserir novo usuário.
             const insertQuery = 'INSERT INTO profile (name, avatar, cpf, email, password) VALUES (?, ?, ?, ?, ?)';
             connection.query(insertQuery, [cadName, cadAvatar, cadCpf, cadEmail, hash], (error, results) => {
                 if (error) {
