@@ -59,7 +59,7 @@ module.exports =  {
     }
 
     
-    const queryGetPassword = 'SELECT password FROM dadosLogin WHERE id = ?';
+    const queryGetPassword = 'SELECT password FROM profile WHERE id = ?';
     connection.query(queryGetPassword, [id], (error, results, fields) => {
         if (error) {
             console.error('Erro ao buscar a senha atual:', error.stack);
@@ -97,7 +97,7 @@ module.exports =  {
         }
 
         
-        const queryUpdatePassword = 'UPDATE dadosLogin SET password = ? WHERE id = ?';
+        const queryUpdatePassword = 'UPDATE profile SET password = ? WHERE id = ?';
         connection.query(queryUpdatePassword, [newPassword, id], (error, results, fields) => {
             if (error) {
                 console.error('Erro ao atualizar a senha:', error.stack);

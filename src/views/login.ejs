@@ -39,6 +39,12 @@
                 <label for="cad_name">Nome Completo</label>
                 <input type="text" name="cadName" id="cad_name" placeholder="Digite seu nome" >
 
+                <label for="cad_name">CPF</label>
+                <input type="text" name="cadCpf" id="cad_cpf" placeholder="Digite seu cpf" >
+
+                <label for="cad_name">Link da foto</label>
+                <input type="text" name="cadAvatar" id="cad_avatar" placeholder="Digite o link da sua foto" >
+
                 <label for="cad_email">E-mail</label>
                 <input type="text" name="cadEmail" id="cad_email" placeholder="Digite seu e-mail" autocomplet="off">
 
@@ -65,6 +71,8 @@
                 let cadName = document.querySelector('#cad_name');
                 let cadEmail = document.querySelector('#cad_email');
                 let cadPassword = document.querySelector('#cad_password');
+                let cadCpf = document.querySelector('#cad_cpf');
+                let cadAvatar = document.querySelector('#cad_avatar');
 
 
                 if (!cadName.value.trim() || !cadEmail.value.trim() || !cadPassword.value.trim()) {

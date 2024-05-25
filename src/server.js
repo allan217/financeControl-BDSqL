@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const server = express()
 const routes = require("./routes");
 const path = require("path");
@@ -14,6 +15,12 @@ server.use(express.static("public"))
 
 // Liberar o req.body, para pegar os dados digitados pelo usuário.
 server.use(express.urlencoded({extended: true}))
+
+server.use(session({
+    secret: '@llan21771245',
+    resave: false,
+    saveUninitialized: true
+}));
 
 server.use(routes)
 

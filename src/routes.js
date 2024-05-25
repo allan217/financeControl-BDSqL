@@ -8,6 +8,7 @@ const controllerLogin = require('./Controllers/controllerLogin');
 
 routes.get('/', controllerLogin.index);
 routes.post('/login', controllerLogin.loginUser);
+routes.get('/addUser', controllerLogin.create);
 routes.post('/addUser', controllerLogin.create);
 routes.get('/page-finance', controllersTransactions.index);
 routes.get('/profile', ProfileController.index);
