@@ -5,9 +5,14 @@ module.exports = {
 
     // Método para renderizar a página de finanças e calcular os totais.
     async index(req, res) {
-        const query = 'SELECT * FROM trans';
+        const userId = req.session.userId;
 
-        connection.query(query, (error, results) => {
+        if (!userId) {
+            return res.status(401).send('Usuário não autenticado.');
+        }
+        const query = 'SELECT * FROM trans WHERE userId = ?';
+
+        connection.query(query, [userId], (error, results) => {
             if (error) {
                 console.error('Erro ao executar a consulta:', error.stack);
                 res.status(500).send('Erro ao recuperar os dados de transações.');
@@ -60,24 +65,26 @@ module.exports = {
             removeFirstItem();
             
             // Consulta para obter os dados do perfil
-            const queryProfile = 'SELECT * FROM profile WHERE id = 1';
+            const queryProfile = 'SELECT * FROM profile WHERE id = ?';
 
-            connection.query(queryProfile, (error, resultsProfile) => {
+            connection.query(queryProfile, [userId], (error, results) => {
                 if (error) {
                     console.error('Erro ao executar a consulta:', error.stack);
                     res.status(500).send('Erro ao recuperar os dados do perfil.');
                     return;
                 }
+        
+                const profile = results[0];
 
-                if (resultsProfile.length === 0) {
+                if (results.length === 0) {
                     console.log('Perfil não encontrado.');
                     res.status(404).send('Perfil não encontrado.');
                     return;
                 }
 
-                const profile = resultsProfile[0];
+                
                 // Renderiza a página com transações e perfil
-                res.render('page-finance', { transactions, profile });
+                res.render('page-finance', { transactions, profile, userId });
             });
  
         });
@@ -88,10 +95,14 @@ module.exports = {
     // Método para salvar uma nova transação
     async save(req, res) {
         const {description, amount, date} = req.body;
-        
-        const query = 'INSERT INTO trans (description, amount, date) VALUES (?, ?, ?)';
+        const userId = req.session.userId;
 
-        connection.query(query, [description, amount, date], (error, results) => {
+        if (!userId) {
+            res.status(401).send('Usuário não autenticado.');
+        }
+        const query = 'INSERT INTO trans (description, amount, date, userId) VALUES (?, ?, ?, ?)';
+
+        connection.query(query, [description, amount, date, userId], (error, results) => {
             if (error) {
                 console.error('Erro ao inserir transação: ', error.stack);
                 res.status(500).send('Erro ao adicionar transação.');
@@ -108,9 +119,14 @@ module.exports = {
     // Método para renderizar a página de edição de transação
     async edit(req, res) {
         const { id } = req.params;
+        const userId = req.session.userId;
+
+        if (!userId) {
+            res.status(401).send('Usuario não autenticado.');
+        }
         
-        const query = 'SELECT * FROM trans WHERE id = ?';
-        connection.query(query, [id], (error, results) => {
+        const query = 'SELECT * FROM trans WHERE id = ? AND userId = ?';
+        connection.query(query, [id, userId], (error, results) => {
             if (error) {
                 console.error('Erro ao buscar a transação:', error.stack);
                 res.status(500).send('Erro ao buscar a transação.');
@@ -125,8 +141,13 @@ module.exports = {
     async update(req, res) {
         const { id } = req.params;
         const { description, amount, date } = req.body;
+        const userId = req.session.userId;
+
+        if (!userId) {
+            res.status(401).send('Usuário não autenticado.')
+        }
     
-        connection.query('SELECT * FROM trans WHERE id = ?', [id], (error, results) => {
+        connection.query('SELECT * FROM trans WHERE id = ? AND userId = ?', [id, userId], (error, results) => {
             if (error) {
                 console.error('Erro ao verificar o ID:', error.stack);
                 res.status(500).send('Erro ao verificar o ID.');
@@ -138,8 +159,8 @@ module.exports = {
                 return;
             }
     
-            const query = 'UPDATE trans SET description = ?, amount = ?, date = ? WHERE id = ?';
-            connection.query(query, [description, amount, date, id], (error, updateResults) => {
+            const query = 'UPDATE trans SET description = ?, amount = ?, date = ? WHERE id = ? AND userId = ?';
+            connection.query(query, [description, amount, date, id, userId], (error, updateResults) => {
                 if (error) {
                     console.error('Erro ao atualizar a transação:', error.stack);
                     res.status(500).send('Erro ao atualizar a transação.');
@@ -156,9 +177,14 @@ module.exports = {
     async delete(req, res) {
         
         const { id } = req.params;
+        const userId = req.session.userId;
 
-        const query = 'DELETE FROM trans WHERE id = ?';
-        connection.query(query, [id], (error, results) => {
+        if (!userId) {
+            res.status(401).send('Usuario não autenticado');
+        }
+
+        const query = 'DELETE FROM trans WHERE id = ? AND userId = ?';
+        connection.query(query, [id. userId], (error, results) => {
             if (error) {
                 console.error('Erro ao deletar a transação:', error.stack);
                 res.status(500).send('Erro ao deletar a transação.');

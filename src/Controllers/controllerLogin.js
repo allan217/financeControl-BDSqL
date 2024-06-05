@@ -62,7 +62,17 @@ module.exports =  {
                 res.render("login", { errorMessage: "Credenciais inválidas. Por favor, tente novamente." });
                 return false;
             }
+            
         })
         
-    } 
-   }
+    },
+    async logout(req, res)  {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error('Erro ao fazer logout:', err.stack);
+                return res.status(500).send('Erro ao fazer logout.');
+            }
+            res.redirect('/');
+        });
+    }
+}

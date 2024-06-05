@@ -3,33 +3,38 @@ const connection = require('../db/config');
  
 module.exports =  {
     async index(req, res) {
-        const query = 'SELECT * FROM profile';
+        const query = 'SELECT * FROM profile WHERE id = ?';
 
-        connection.query(query, (error, results, fields) => {
+        connection.query(query, [req.session.userId], (error, results) => {
             if (error) {
                 console.error('Erro ao executar a consulta:', error.stack);
                 res.status(500).send('Erro ao recuperar os dados do perfil.');
                 return;
             }
             const profile = results[0];
-            res.render('profile', { profile });
+            res.render('profile', { profile, userId: req.session.userId });
         });
     },
     async update(req, res) {
         
         const { name, avatar, cpf } = req.body;
+        const userId = req.session.userId; // Obtém o ID do usuário da sessão
 
-        const query = 'UPDATE profile SET name = ?, avatar = ?, cpf = ? WHERE id = 1';
+    if (!userId) {
+        return res.status(401).send('Usuário não autenticado.');
+    }
 
-        connection.query(query, [name, avatar, cpf], (error, results) => {
-            if (error) {
-                console.error('Erro ao atualizar os dados do perfil:', error.stack);
-                res.status(500).send('Erro ao atualizar os dados do perfil.');
-                return;
-            }
+        const query = 'UPDATE profile SET name = ?, avatar = ?, cpf = ? WHERE id = ?';
 
-            res.redirect('/profile');
-        });
+        connection.query(query, [name, avatar, cpf, userId], (error, results) => {
+        if (error) {
+            console.error('Erro ao atualizar os dados do perfil:', error.stack);
+            res.status(500).send('Erro ao atualizar os dados do perfil.');
+            return;
+        }
+
+        res.redirect('/profile');
+    });
     },
     async updatePass(req, res) {
         const { atualPassword, newPassword, reptPassword } = req.body;

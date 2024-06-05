@@ -6,20 +6,29 @@ const controllerLogin = require('./Controllers/controllerLogin');
 
 
 
+function checkAuthenticated(req, res, next) {
+    if (req.session.userId) {
+        return next();
+    } else {
+        res.redirect('/');
+    }
+}
+
 routes.get('/', controllerLogin.index);
 routes.post('/login', controllerLogin.loginUser);
 routes.get('/addUser', controllerLogin.create);
 routes.post('/addUser', controllerLogin.create);
-routes.get('/page-finance', controllersTransactions.index);
-routes.get('/profile', ProfileController.index);
-routes.post('/profile', ProfileController.update);
-routes.get('/profile/updatePass/:id', ProfileController.updatePass);
-routes.post('/profile/updatePass/:id', ProfileController.updatePass);
-routes.get('/add', controllersTransactions.create);
-routes.post('/add', controllersTransactions.save);
-routes.get('/editT/:id', controllersTransactions.edit);
-routes.post('/editT/:id', controllersTransactions.update);
-routes.get('/delete/:id', controllersTransactions.delete);
-routes.post('/delete/:id', controllersTransactions.delete);
+routes.get('/page-finance', checkAuthenticated, controllersTransactions.index);
+routes.get('/profile', checkAuthenticated, ProfileController.index);
+routes.post('/profile', checkAuthenticated, ProfileController.update);
+routes.get('/profile/updatePass/:id', checkAuthenticated, ProfileController.updatePass);
+routes.post('/profile/updatePass/:id', checkAuthenticated, ProfileController.updatePass);
+routes.get('/add', checkAuthenticated, controllersTransactions.create);
+routes.post('/add', checkAuthenticated, controllersTransactions.save);
+routes.get('/editT/:id', checkAuthenticated, controllersTransactions.edit);
+routes.post('/editT/:id', checkAuthenticated, controllersTransactions.update);
+routes.get('/delete/:id', checkAuthenticated, controllersTransactions.delete);
+routes.post('/delete/:id', checkAuthenticated, controllersTransactions.delete);
+routes.get('/logout', controllerLogin.logout);
 
 module.exports = routes;
