@@ -10,9 +10,26 @@ module.exports = {
         if (!userId) {
             return res.status(401).send('Usuário não autenticado.');
         }
-        const query = 'SELECT * FROM trans WHERE userId = ?';
 
-        connection.query(query, [userId], (error, results) => {
+
+        const { month, date } = req.query;
+        let query = 'SELECT * FROM trans WHERE userId = ?';
+        let queryParams = [userId];
+
+        if (month) {
+            query += ' AND DATE_FORMAT(date, "%Y-%m") = ?';
+            queryParams.push(month);
+        }
+
+        if (date) {
+            query += ' AND DATE(date) = ?';
+            queryParams.push(date);
+        }
+
+
+        
+
+        connection.query(query, queryParams, (error, results) => {
             if (error) {
                 console.error('Erro ao executar a consulta:', error.stack);
                 res.status(500).send('Erro ao recuperar os dados de transações.');
@@ -184,7 +201,7 @@ module.exports = {
         }
 
         const query = 'DELETE FROM trans WHERE id = ? AND userId = ?';
-        connection.query(query, [id. userId], (error, results) => {
+        connection.query(query, [id, userId], (error, results) => {
             if (error) {
                 console.error('Erro ao deletar a transação:', error.stack);
                 res.status(500).send('Erro ao deletar a transação.');

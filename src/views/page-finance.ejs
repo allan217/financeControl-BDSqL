@@ -59,10 +59,20 @@
 
             <section class="animate-pop delay-1" id="transaction">
                 <h2 class="sr-only">Transações</h2>
-
+                
                 <a href="/add/" 
                 class="button new">+ Nova Transação</a>
-             
+
+                <form class="filter" action="/page-finance" method="GET">
+                    <label for="month">Mês:</label>
+                    <input type="month" id="month" name="month">
+                
+                    <label for="date">Data específica:</label>
+                    <input type="date" id="date" name="date">
+                
+                    <button type="submit">Filtrar</button>
+                </form>
+                
                 <table class="animate-pop delay-2" id="data-table">
                     <thead>
                         <tr>

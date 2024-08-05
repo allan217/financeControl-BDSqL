@@ -39,7 +39,7 @@ body {
 .container {
 	width: min(90vw, 800px);
 	margin: auto;
-	margin-top: 3rem;
+	margin-top: 4rem;
 }
 
 a {
@@ -51,7 +51,7 @@ a {
 
 button {
 	width: 100%;
-	height: 50px;
+	height: 40px;
 	border: none;
 	color: white;
 	background: var(--green);
@@ -485,4 +485,8 @@ footer {
     border-radius: 50%;
     border: 0.156rem solid #32CD32;
     margin-bottom: -1.8rem;
+  }
+  .filter {
+	width: 100%;
+    display: inline-flex
   }

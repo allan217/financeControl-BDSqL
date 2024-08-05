@@ -30,6 +30,12 @@
       <aside class="card">
         <img src="<%= profile.avatar %>" alt="">
         <h2><%= profile.name %></h2>
+
+        <form action="" method="post" enctype="multipart/form-data">
+          <label for="">Alterar foto do perfil:</label>
+          <input type="file" name="" id="" accept="image/*">
+          <button type="submit">Upload</button>
+        </form>
     
         <button onclick="ModalAlter.open()" class="button green" form="form-profile" type="submit">Salvar dados</button>
         <button onclick="ModalAlterPass.open()" class="button green" form="form-alterPass">Alterar senha</button>

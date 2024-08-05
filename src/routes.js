@@ -3,7 +3,7 @@ const routes = express.Router();
 const ProfileController = require('./Controllers/ProfileController');
 const controllersTransactions = require('./Controllers/controllersTransactions');
 const controllerLogin = require('./Controllers/controllerLogin');
-
+const controllerHome = require('./Controllers/controllerHome');
 
 
 function checkAuthenticated(req, res, next) {
@@ -15,6 +15,7 @@ function checkAuthenticated(req, res, next) {
 }
 
 routes.get('/', controllerLogin.index);
+routes.get('/home', controllerHome.index);
 routes.post('/login', controllerLogin.loginUser);
 routes.get('/addUser', controllerLogin.create);
 routes.post('/addUser', controllerLogin.create);
