@@ -9,6 +9,7 @@
 :root {
   --color-background: #F0F2F5;
   --color-text: #FCFDFF;
+  --dark-blue: #363f5f;
 
   --color-primary: #41414C;
   --color-secondary: #F1972C;
@@ -112,4 +113,10 @@ a {
 
 .flex {
   display: flex;
+}
+footer {
+  text-align: center;
+  padding: 4rem 0 2rem;
+  color: var(--dark-blue);
+  opacity: 0.6;
 }
