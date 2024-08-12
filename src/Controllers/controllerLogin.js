@@ -1,5 +1,4 @@
 const connection = require('../db/config')
-const bcrypt = require('bcrypt');
 
 
 module.exports =  {
@@ -22,16 +21,10 @@ module.exports =  {
             return res.render('login', { errorMessage: 'Email já está em uso. Por favor, use outro email.' });
         }
 
-        // Hash da senha antes de armazenar
-        bcrypt.hash(cadPassword, 10, (err, hash) => {
-            if (err) {
-                console.error('Erro ao fazer hash da senha:', err.stack);
-                return res.status(500).send('Erro ao criar novo usuário.');
-            }
 
             // Inserir novo usuário.
             const insertQuery = 'INSERT INTO profile (name, avatar, cpf, email, password) VALUES (?, ?, ?, ?, ?)';
-            connection.query(insertQuery, [cadName, cadAvatar, cadCpf, cadEmail, hash], (error, results) => {
+            connection.query(insertQuery, [cadName, cadAvatar, cadCpf, cadEmail, cadPassword], (error, results) => {
                 if (error) {
                     console.error('Erro ao criar novo usuário:', error.stack);
                     return res.status(500).send('Erro ao criar novo usuário.');
@@ -39,7 +32,6 @@ module.exports =  {
 
                 res.redirect('/');
             });
-        });
     });
     
     },
