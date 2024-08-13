@@ -233,3 +233,24 @@ label {
 .success-message {
   color: green;
 }
+
+.container {
+  display: flex;
+  flex-direction: column; /* Para telas pequenas */
+  padding: 20px;
+}
+
+@media (min-width: 768px) {
+  .container {
+      flex-direction: row; /* Para telas maiores */
+  }
+}
+
+aside.card {
+  flex: 1;
+  margin: 10px;
+}
+main {
+  flex: 10;
+  margin: 0px;
+}
